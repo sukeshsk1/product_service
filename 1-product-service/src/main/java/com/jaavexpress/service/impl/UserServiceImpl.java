@@ -93,25 +93,43 @@ public class UserServiceImpl implements UserService {
 		return userRespository.findAll().stream().map(obj -> mapToDto(obj,obj.getCredential())).toList();
 	}
 
+	
 	@Override
 	public UserDTO update(Long userId, UserDTO userDto) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		User dbUser = userRespository.findById(userId)
+				.orElseThrow(() -> new UserNotFoundException("User id not exits in db"));
+		
+		dbUser.setFirstName(userDto.getFirstName());
+		dbUser.setLastName(userDto.getLastName());
+		dbUser.setEmail(userDto.getEmail());
+		dbUser.setPhone(userDto.getPhone());
+		
+		userRespository.save(dbUser);
+		
+		return mapToDto(dbUser, dbUser.getCredential());
 	}
 
 	@Override
 	public UserDTO findByUsername(String username) {
-		return null;
-		// TODO Auto-generated method stub
-		
-		/*
-		 * Optional<User> user = userRespository.findByUserName(userName);
-		 * if(user.isPresent()) { User dbUser=user.get(); Credential dbCredential=
-		 * dbUser.getCredential(); return mapToDto(dbUser, dbCredential); }else { throw
-		 * new UserNotFoundException("User Not found in database"); }
-		 */
-		
-		
+		return userRespository.findByCredentialUsername(username)
+				.map(user -> mapToDto(user, user.getCredential()))
+				.orElseThrow(() -> new UserNotFoundException("Username not found in db"));
+				
 	}
+		 ///second type 
+		/* if(user.isPresent()) {
+			 User dbUser=user.get(); 
+			 Credential dbCredential=dbUser.getCredential();
+			 return mapToDto(dbUser, dbCredential);
+			 
+		 }
+		 
+		 else { throw new UserNotFoundException("User Not found in database");
+		 } */
+		
+		
+		
+	
 
 }
