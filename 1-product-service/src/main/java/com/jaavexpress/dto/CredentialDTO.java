@@ -7,7 +7,7 @@ import lombok.Data;
 public class CredentialDTO {
 	
 	private String username;
-	private String password;
+	//private String password;
 	
 	
 	

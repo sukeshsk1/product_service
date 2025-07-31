@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jaavexpress.dto.UserDTO;
 import com.jaavexpress.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -23,7 +24,7 @@ public class UserController {
 	private UserService userService;
 
 	@PostMapping
-	public UserDTO createUser(@RequestBody UserDTO userDTO) {
+	public UserDTO createUser(@Valid @RequestBody UserDTO userDTO) {
 		log.info("UserController userDTO {}", userDTO);
 		return userService.save(userDTO);
 	}

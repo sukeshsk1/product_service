@@ -1,10 +1,12 @@
 package com.jaavexpress.excption;
 
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 public class GlobalExceptionHandler {
@@ -26,6 +28,22 @@ public class GlobalExceptionHandler {
 		errorAPI.setMessage("Validation Error");
 		errorAPI.setStatus(HttpStatus.BAD_REQUEST.getReasonPhrase());
 		errorAPI.setError(ex.getMessage());
+		return new ResponseEntity<>(errorAPI,HttpStatus.BAD_REQUEST);
+	}
+	
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ErrorAPI> handleException(MethodArgumentNotValidException ex) {
+		
+		String error=ex.getBindingResult().getFieldErrors().stream()
+				.map(obj->obj.getField()+":"+obj.getDefaultMessage())
+				.collect(Collectors.joining(","));
+		
+		ErrorAPI errorAPI = new ErrorAPI();
+		errorAPI.setLocalDateTime(LocalDateTime.now());
+		errorAPI.setMessage("Malformed JSON Data ");
+		errorAPI.setStatus(HttpStatus.BAD_REQUEST.getReasonPhrase());
+		errorAPI.setError(error);
 		return new ResponseEntity<>(errorAPI,HttpStatus.BAD_REQUEST);
 	}
 	
